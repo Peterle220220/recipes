@@ -1,4 +1,6 @@
+import AsyncStorage from "@react-native-async-storage/async-storage"; // Import AsyncStorage
 import axios from "axios";
+import { router } from "expo-router";
 import { Alert } from "react-native"; // Optional: for basic error alerts
 
 // --- Configuration ---
@@ -14,8 +16,6 @@ const apiClient = axios.create({
   headers: {
     Accept: "application/json", // Expect JSON responses
     "Content-Type": "application/json", // Send data as JSON
-    // Add other default headers if needed, like Authorization tokens:
-    // 'Authorization': `Bearer YOUR_AUTH_TOKEN`,
   },
   timeout: 15000, // Set a request timeout (15 seconds)
 });
@@ -23,13 +23,16 @@ const apiClient = axios.create({
 // --- Optional: Add Request/Response Interceptors ---
 // Example: Log requests or handle token refresh
 apiClient.interceptors.request.use(
-  (config) => {
+  async (config) => {
+    const token = await AsyncStorage.getItem("token"); // Retrieve token from AsyncStorage
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`; // Set the token in the headers
+    }
     console.log(
       `Requesting: ${config.method?.toUpperCase()} ${config.url}`,
       config.params || "",
       config.data || ""
     );
-    // You could add or modify headers here (e.g., inject auth token)
     return config;
   },
   (error) => {
@@ -152,6 +155,7 @@ const handleApiError = (error, endpoint) => {
     // Example: Show a user-friendly message based on status
     if (status === 401) {
       Alert.alert("Unauthorized", "Please log in again.");
+      router.replace("/login" as any);
       // Potentially trigger logout logic here
     } else if (status === 404) {
       Alert.alert("Not Found", "The requested resource could not be found.");

@@ -57,6 +57,10 @@ export default function Layout() {
       <Stack initialRouteName="index">
         <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen name="about" options={{ title: "About" }} />
+        <Stack.Screen
+          name="login"
+          options={{ title: "Login", headerShown: false }}
+        />
         <Stack.Screen name="screens/register" options={{ title: "Register" }} />
         <Stack.Screen
           name="screens/forgot-password"

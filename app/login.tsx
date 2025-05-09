@@ -17,6 +17,8 @@ import {
 } from "react-native";
 import { useTogglePasswordVisibility } from "./hooks/useTogglePasswordVisibility";
 import { api } from "./services/api";
+import { keyToken } from "./utils/storage_key";
+import { UserData } from "./services/user_data";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -50,7 +52,9 @@ export default function Login() {
       }
 
       // Store the token if needed
-      await AsyncStorage.setItem("token", response.token);
+      await AsyncStorage.setItem(keyToken, response.token);
+
+      UserData.init();
 
       // Navigate to the main screen on successful login
       router.replace("/(tabs)/home" as Href);

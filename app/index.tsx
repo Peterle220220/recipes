@@ -1,11 +1,16 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Href, router } from "expo-router";
 import { useEffect } from "react";
-import { ActivityIndicator, Image, View } from "react-native";
+import { ActivityIndicator, Image, StyleSheet, View } from "react-native";
+import { UserData } from "./services/user_data";
+import { keyToken } from "./utils/storage_key";
+
 export default function Index() {
   useEffect(() => {
     const checkToken = async () => {
-      const token = await AsyncStorage.getItem("token");
+      const token = await AsyncStorage.getItem(keyToken);
+      await UserData.getInstance().fetchFavorite();
+      await UserData.getInstance().fetchBookmarked();
       if (token) {
         router.replace("/(tabs)/home");
       } else {
@@ -16,9 +21,26 @@ export default function Index() {
   }, []);
 
   return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <ActivityIndicator size="large" />
-      <Image source={require("../assets/images/splas.png")} />
+    <View style={styles.container}>
+      <Image
+        source={require("../assets/images/splash.png")}
+        style={styles.image}
+        resizeMode="contain"
+      />
+      <ActivityIndicator size="small" />
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#fff",
+  },
+  image: {
+    width: "80%",
+    height: "50%",
+  },
+});

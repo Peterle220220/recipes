@@ -65,5 +65,4 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: "#E5E5EA",
   },
-  
 });

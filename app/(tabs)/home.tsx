@@ -1,12 +1,15 @@
-import { useEffect, useState } from "react";
+import { router } from "expo-router";
+import { useCallback, useEffect, useState } from "react";
 import {
   Alert,
+  FlatList,
   Image,
+  RefreshControl,
   SafeAreaView,
-  ScrollView,
   StyleSheet,
   Text,
   TextInput,
+  TouchableOpacity,
   View,
 } from "react-native";
 import RecipeCard from "../components/RecipeCard";
@@ -14,61 +17,107 @@ import { api } from "../services/api";
 
 export default function HomeScreen() {
   const [recipes, setRecipes] = useState([]);
+  const [recentRecipes, setRecentRecipes] = useState([]);
+  const [search, setSearch] = useState("");
+  const [refreshing, setRefreshing] = useState(false);
+
+  const fetchRecipesRecent = async () => {
+    try {
+      const response = await api.get("/recipes/recent");
+      setRecentRecipes(response);
+    } catch (error) {
+      console.error("Error fetching recipes:", error);
+      Alert.alert("Error fetching recipes:", error);
+    }
+  };
+
+  const fetchRecipes = async () => {
+    try {
+      const response = await api.get("/recipes/popular");
+      setRecipes(response.recipes || []);
+    } catch (error) {
+      console.error("Error fetching recipes:", error);
+      Alert.alert("Error fetching recipes:", error.message || String(error));
+    }
+  };
 
   useEffect(() => {
-    const fetchRecipes = async () => {
-      try {
-        const response = await api.get("/recipes", {
-          params: {
-            page: 1,
-          },
-        });
-        console.log(
-          "Fetched recipes:",
-          JSON.stringify(response.recipes, null, 2)
-        );
-        setRecipes(response.recipes);
-      } catch (error) {
-        console.error("Error fetching recipes:", error);
-        Alert.alert("Error fetching recipes:", error);
-      }
-    };
     fetchRecipes();
+    fetchRecipesRecent();
   }, []);
 
-  return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
-        <View style={styles.header}>
-          <Text style={styles.text}>Hungry? Choose a dish</Text>
-          <Image
-            style={styles.logo}
-            source={require("../../assets/images/splash.png")}
-          />
-        </View>
-        <View style={styles.inputContainer}>
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await fetchRecipes();
+    await fetchRecipesRecent();
+    setRefreshing(false);
+  };
+
+  const handleSearch = (e) => {
+    router.navigate(`/(tabs)/search`);
+  };
+
+  const renderRecipe = useCallback(
+    ({ item }) => (
+      <RecipeCard
+        key={item._id}
+        imageSource={`http://10.3.2.41:3000/${item.mainImage}`}
+        recipeName={item.title}
+        recipeId={item._id}
+      />
+    ),
+    []
+  );
+
+  // ListHeaderComponent chứa toàn bộ UI
+  const renderHeader = () => (
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.text}>Hungry? Choose a dish</Text>
+        <Image
+          style={styles.logo}
+          source={require("../../assets/images/splash.png")}
+        />
+      </View>
+      <View style={styles.inputContainer}>
+        <TouchableOpacity onPress={handleSearch}>
           <TextInput
             style={styles.inputField}
             placeholder="Search for a recipe"
+            readOnly={true}
           />
-        </View>
-        <ScrollView showsVerticalScrollIndicator={false}>
-          <Text style={styles.popularText}>Popular Recipes</Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            {recipes.map((recipe) => (
-              <RecipeCard
-                key={recipe._id}
-                imageSource={`http://10.3.2.41:3000/${recipe.mainImage}`}
-                recipeName={recipe.title}
-                initialIsFavorite={false}
-                onToggleFavorite={() => {}}
-                initialIsBookmarked={false}
-                onToggleMark={() => {}}
-              />
-            ))}
-          </ScrollView>
-        </ScrollView>
+        </TouchableOpacity>
       </View>
+      <Text style={styles.popularText}>Popular Recipes</Text>
+      <FlatList
+        data={recipes}
+        renderItem={renderRecipe}
+        keyExtractor={(item) => item._id}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+      />
+      <Text style={styles.popularText}>Recent Recipes</Text>
+      <FlatList
+        showsHorizontalScrollIndicator={false}
+        data={recentRecipes}
+        renderItem={renderRecipe}
+        keyExtractor={(item) => item._id}
+        horizontal
+      />
+    </View>
+  );
+
+  return (
+    <SafeAreaView style={styles.safeArea}>
+      <FlatList
+        data={[]}
+        renderItem={null}
+        ListHeaderComponent={renderHeader}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+        showsVerticalScrollIndicator={false}
+      />
     </SafeAreaView>
   );
 }
@@ -92,6 +141,7 @@ const styles = StyleSheet.create({
   },
   popularText: {
     fontSize: 20,
+    marginTop: 20,
     marginBottom: 18,
   },
   logo: {

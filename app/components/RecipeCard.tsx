@@ -2,40 +2,43 @@
 import { Ionicons } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
 import { Image, StyleSheet, Text, View } from "react-native";
+import { UserData } from "../services/user_data";
 
 interface RecipeCardProps {
   imageSource: string; // Accept URL for the image
   recipeName: string;
-  initialIsFavorite: boolean;
-  onToggleFavorite: () => void;
-  initialIsBookmarked: boolean;
-  onToggleMark: () => void;
+  recipeId: string;
 }
 
 const RecipeCard: React.FC<RecipeCardProps> = ({
   imageSource,
   recipeName,
-  initialIsFavorite,
-  onToggleFavorite,
-  initialIsBookmarked,
-  onToggleMark,
+  recipeId,
 }) => {
-  const [isFavorite, setIsFavorite] = useState(initialIsFavorite);
-  const [isBookmarked, setIsBookmarked] = useState(initialIsBookmarked);
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [isBookmarked, setIsBookmarked] = useState(false);
 
   useEffect(() => {
-    setIsFavorite(initialIsFavorite);
-    setIsBookmarked(initialIsBookmarked);
-  }, [initialIsFavorite, initialIsBookmarked]);
+    setIsFavorite(UserData.getFavorites().includes(recipeId));
+    setIsBookmarked(UserData.getBookmarked().includes(recipeId));
+  }, []);
 
   const handleToggleFavorite = () => {
     setIsFavorite(!isFavorite);
-    onToggleFavorite();
+    if (isFavorite) {
+      UserData.getInstance().removeFavorite(recipeId);
+    } else {
+      UserData.getInstance().addFavorite(recipeId);
+    }
   };
 
   const handleToggleMark = () => {
     setIsBookmarked(!isBookmarked);
-    onToggleMark();
+    if (isBookmarked) {
+      UserData.getInstance().removeBookmarked(recipeId);
+    } else {
+      UserData.getInstance().addBookmarked(recipeId);
+    }
   };
 
   return (
