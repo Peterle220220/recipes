@@ -61,6 +61,11 @@ export default function Layout() {
           name="login"
           options={{ title: "Login", headerShown: false }}
         />
+        <Stack.Screen
+          name="RecipeDetail"
+          options={{ title: "Recipe Detail", headerShown: false }}
+        />
+
         <Stack.Screen name="screens/register" options={{ title: "Register" }} />
         <Stack.Screen
           name="screens/forgot-password"

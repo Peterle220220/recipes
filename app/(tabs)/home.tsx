@@ -1,4 +1,4 @@
-import { router } from "expo-router";
+import { router, useNavigation } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import {
   Alert,
@@ -16,6 +16,7 @@ import RecipeCard from "../components/RecipeCard";
 import { api } from "../services/api";
 
 export default function HomeScreen() {
+  const navigation = useNavigation();
   const [recipes, setRecipes] = useState([]);
   const [recentRecipes, setRecentRecipes] = useState([]);
   const [search, setSearch] = useState("");
@@ -64,6 +65,9 @@ export default function HomeScreen() {
         imageSource={`http://10.3.2.41:3000/${item.mainImage}`}
         recipeName={item.title}
         recipeId={item._id}
+        onPress={() =>
+          (navigation as any).navigate("RecipeDetail", { id: item._id })
+        }
       />
     ),
     []

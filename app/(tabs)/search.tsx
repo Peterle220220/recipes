@@ -1,3 +1,4 @@
+import { useNavigation } from "@react-navigation/native";
 import React, { useState } from "react";
 import {
   ActivityIndicator,
@@ -51,6 +52,7 @@ export default function SearchScreen() {
   const [error, setError] = useState("");
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [showFilter, setShowFilter] = useState(false);
+  const navigation = useNavigation();
 
   const handleSearch = async () => {
     setLoading(true);
@@ -165,27 +167,36 @@ export default function SearchScreen() {
           ) : searchResults.length > 0 ? (
             <ScrollView style={{ flex: 1 }}>
               {searchResults.map((item) => (
-                <View style={styles.card} key={item._id}>
-                  <View style={styles.cardImageWrapper}>
-                    <Image
-                      source={{
-                        uri: `http://10.3.2.41:3000/${item.mainImage}`,
-                      }}
-                      style={{ width: 70, height: 70 }}
-                    />
+                <TouchableOpacity
+                  onPress={() =>
+                    (navigation as any).navigate("RecipeDetail", {
+                      id: item._id,
+                    })
+                  }
+                  key={item._id}
+                >
+                  <View style={styles.card}>
+                    <View style={styles.cardImageWrapper}>
+                      <Image
+                        source={{
+                          uri: `http://10.3.2.41:3000/${item.mainImage}`,
+                        }}
+                        style={{ width: 70, height: 70 }}
+                      />
+                    </View>
+                    <View style={styles.cardContent}>
+                      <Text style={styles.cardTitle}>{item.title}</Text>
+                      <Text style={styles.cardSubtitle}>
+                        By {item.createdBy.username}
+                      </Text>
+                      {item.rating == 0 ? (
+                        <View></View>
+                      ) : (
+                        <Text>Rating: {item.rating} ⭐</Text>
+                      )}
+                    </View>
                   </View>
-                  <View style={styles.cardContent}>
-                    <Text style={styles.cardTitle}>{item.title}</Text>
-                    <Text style={styles.cardSubtitle}>
-                      By {item.createdBy.username}
-                    </Text>
-                    {item.rating == 0 ? (
-                      <View></View>
-                    ) : (
-                      <Text>Rating: {item.rating} ⭐</Text>
-                    )}
-                  </View>
-                </View>
+                </TouchableOpacity>
               ))}
             </ScrollView>
           ) : searchQuery ? (

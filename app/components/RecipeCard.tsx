@@ -1,19 +1,21 @@
 // app/components/RecipeCard.tsx
 import { Ionicons } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
-import { Image, StyleSheet, Text, View } from "react-native";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { UserData } from "../services/user_data";
 
 interface RecipeCardProps {
   imageSource: string; // Accept URL for the image
   recipeName: string;
   recipeId: string;
+  onPress?: () => void;
 }
 
 const RecipeCard: React.FC<RecipeCardProps> = ({
   imageSource,
   recipeName,
   recipeId,
+  onPress,
 }) => {
   const [isFavorite, setIsFavorite] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
@@ -42,24 +44,26 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
   };
 
   return (
-    <View style={styles.card}>
-      <Image source={{ uri: imageSource }} style={styles.image} />
-      <Text style={styles.name}>{recipeName}</Text>
-      <View style={styles.iconContainer}>
-        <Ionicons
-          name={isFavorite ? "heart" : "heart-outline"}
-          size={32}
-          color="red"
-          onPress={handleToggleFavorite}
-        />
-        <Ionicons
-          name={isBookmarked ? "bookmark" : "bookmark-outline"}
-          size={32}
-          color="blue"
-          onPress={handleToggleMark}
-        />
+    <TouchableOpacity onPress={onPress} activeOpacity={0.85}>
+      <View style={styles.card}>
+        <Image source={{ uri: imageSource }} style={styles.image} />
+        <Text style={styles.name}>{recipeName}</Text>
+        <View style={styles.iconContainer}>
+          <Ionicons
+            name={isFavorite ? "heart" : "heart-outline"}
+            size={32}
+            color="red"
+            onPress={handleToggleFavorite}
+          />
+          <Ionicons
+            name={isBookmarked ? "bookmark" : "bookmark-outline"}
+            size={32}
+            color="blue"
+            onPress={handleToggleMark}
+          />
+        </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 
