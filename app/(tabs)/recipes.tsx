@@ -5,7 +5,6 @@ import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
-  Image,
   StyleSheet,
   Text,
   TextInput,
@@ -13,7 +12,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { api_base } from "../services/api";
+import RecipeCardHorizontal from "../components/RecipeCardHorizontal";
 import { UserData, getUserRecipes } from "../services/user_data";
 // import Icon from 'react-native-vector-icons/MaterialCommunityIcons'; // Nếu bạn dùng icon
 
@@ -136,31 +135,12 @@ export default function RecipesScreen() {
   };
 
   const renderRecipe = ({ item }) => (
-    <TouchableOpacity
+    <RecipeCardHorizontal
+      item={item}
       onPress={() =>
         (navigation as any).navigate("RecipeDetail", { id: item._id })
       }
-    >
-      <View style={styles.card}>
-        <View style={styles.cardImageWrapper}>
-          <Image
-            source={{
-              uri: `${api_base}/${item.mainImage}`,
-            }}
-            style={{ width: 70, height: 70 }}
-          />
-        </View>
-        <View style={styles.cardContent}>
-          <Text style={styles.cardTitle}>{item.title}</Text>
-          <Text style={styles.cardSubtitle}>By {item.createdBy.username}</Text>
-          {item.rating == 0 ? (
-            <View></View>
-          ) : (
-            <Text>Rating: {item.rating} ⭐</Text>
-          )}
-        </View>
-      </View>
-    </TouchableOpacity>
+    />
   );
 
   const getRecipes = () => {

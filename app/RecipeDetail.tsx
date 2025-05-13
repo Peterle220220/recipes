@@ -16,6 +16,7 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import BackButton from "./screens/components/BackButton";
 import { api, api_base } from "./services/api";
 import { UserData } from "./services/user_data";
 
@@ -206,14 +207,11 @@ Check out this recipe on our app!
             style={{ width: "100%", height: 220 }}
           />
           <View style={[styles.backButtonContainer]} pointerEvents="box-none">
-            <TouchableOpacity
+            <BackButton
               onPress={() => navigation.goBack()}
-              style={styles.backButton}
-              activeOpacity={0.7}
-              hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
-            >
-              <Ionicons name="arrow-back" size={28} color="#fff" />
-            </TouchableOpacity>
+              color="#fff"
+              style={{ backgroundColor: "rgba(0,0,0,0.4)" }}
+            />
           </View>
           <View style={styles.actionButtonContainer} pointerEvents="box-none">
             <TouchableOpacity

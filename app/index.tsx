@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { ActivityIndicator, Image, StyleSheet, View } from "react-native";
 import { UserData } from "./services/user_data";
 import { keyToken } from "./utils/storage_key";
+
 export default function Index() {
   useEffect(() => {
     const checkToken = async () => {

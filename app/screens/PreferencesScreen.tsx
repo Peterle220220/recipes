@@ -1,4 +1,3 @@
-import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
 import {
@@ -11,6 +10,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import userService from "../services/user_data";
+import BackButton from "./components/BackButton";
 
 export default function PreferencesScreen() {
   const navigation = useNavigation();
@@ -78,14 +78,7 @@ export default function PreferencesScreen() {
         style={[styles.backButtonContainer, { top: (insets?.top || 0) + 8 }]}
         pointerEvents="box-none"
       >
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          style={styles.backButton}
-          activeOpacity={0.7}
-          hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
-        >
-          <Ionicons name="arrow-back" size={28} color="#333" />
-        </TouchableOpacity>
+        <BackButton onPress={() => navigation.goBack()} color="#333" />
       </View>
       <Text style={styles.title}>Preferences</Text>
       {error ? <Text style={styles.error}>{error}</Text> : null}
@@ -169,11 +162,6 @@ const styles = StyleSheet.create({
     position: "absolute",
     left: 15,
     zIndex: 10,
-  },
-  backButton: {
-    backgroundColor: "#eee",
-    borderRadius: 20,
-    padding: 8,
   },
   error: { color: "red", marginBottom: 8, textAlign: "center" },
   success: { color: "green", marginBottom: 8, textAlign: "center" },
