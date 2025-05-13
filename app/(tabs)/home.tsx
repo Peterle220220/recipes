@@ -73,7 +73,7 @@ export default function HomeScreen() {
     []
   );
 
-  // ListHeaderComponent chứa toàn bộ UI
+  // ListHeaderComponent contains all UI
   const renderHeader = () => (
     <View style={styles.container}>
       <View style={styles.header}>

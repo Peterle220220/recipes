@@ -22,6 +22,7 @@ import {
 } from "react-native-safe-area-context";
 import { api, api_base } from "../services/api";
 import { keyToken } from "../utils/storage_key";
+import BackButton from "./components/BackButton";
 
 const DIFFICULTY_OPTIONS = ["Easy", "Medium", "Hard"];
 const CUISINE_OPTIONS = [
@@ -245,14 +246,7 @@ export default function CreateRecipe() {
     <SafeAreaView style={styles.container}>
       <View style={styles.container}>
         <View style={styles.backButtonContainer} pointerEvents="box-none">
-          <TouchableOpacity
-            onPress={() => navigation.goBack()}
-            style={styles.backButton}
-            activeOpacity={0.7}
-            hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
-          >
-            <Ionicons name="arrow-back" size={28} color="#333" />
-          </TouchableOpacity>
+          <BackButton onPress={() => navigation.goBack()} color="#333" />
         </View>
         <ScrollView contentContainerStyle={{ padding: 20, paddingTop: 60 }}>
           <Text style={styles.title}>Create New Recipe</Text>

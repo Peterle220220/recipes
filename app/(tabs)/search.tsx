@@ -2,7 +2,6 @@ import { useNavigation } from "@react-navigation/native";
 import React, { useState } from "react";
 import {
   ActivityIndicator,
-  Image,
   Keyboard,
   Modal,
   Pressable,
@@ -16,6 +15,7 @@ import {
   View,
 } from "react-native";
 import { api } from "../services/api";
+import RecipeCardHorizontal from "../components/RecipeCardHorizontal";
 
 const categories = [
   "Breakfast",
@@ -169,36 +169,15 @@ export default function SearchScreen() {
             ) : searchResults.length > 0 ? (
               <ScrollView style={{ flex: 1 }}>
                 {searchResults.map((item) => (
-                  <TouchableOpacity
+                  <RecipeCardHorizontal
+                    key={item._id}
+                    item={item}
                     onPress={() =>
                       (navigation as any).navigate("RecipeDetail", {
                         id: item._id,
                       })
                     }
-                    key={item._id}
-                  >
-                    <View style={styles.card}>
-                      <View style={styles.cardImageWrapper}>
-                        <Image
-                          source={{
-                            uri: `http://10.3.2.41:3000/${item.mainImage}`,
-                          }}
-                          style={{ width: 70, height: 70 }}
-                        />
-                      </View>
-                      <View style={styles.cardContent}>
-                        <Text style={styles.cardTitle}>{item.title}</Text>
-                        <Text style={styles.cardSubtitle}>
-                          By {item.createdBy.username}
-                        </Text>
-                        {item.rating == 0 ? (
-                          <View></View>
-                        ) : (
-                          <Text>Rating: {item.rating} ⭐</Text>
-                        )}
-                      </View>
-                    </View>
-                  </TouchableOpacity>
+                  />
                 ))}
               </ScrollView>
             ) : searchQuery ? (
@@ -327,7 +306,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
     padding: 16,
-    paddingBottom: 70, // để không bị che bởi bottom bar
+    paddingBottom: 70, // to avoid being covered by the bottom bar
   },
   title: {
     fontSize: 24,

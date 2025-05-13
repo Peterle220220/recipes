@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { api } from "../services/api";
+import BackButton from "./components/BackButton";
 
 export default function RegisterScreen() {
   const [username, setUsername] = useState("");
@@ -60,14 +61,11 @@ export default function RegisterScreen() {
     <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
       <View style={styles.container}>
         <View style={styles.backButtonContainer} pointerEvents="box-none">
-          <TouchableOpacity
+          <BackButton
             onPress={() => router.back()}
-            style={styles.backButton}
-            activeOpacity={0.7}
-            hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
-          >
-            <Ionicons name="arrow-back" size={28} color="#fff" />
-          </TouchableOpacity>
+            color="#fff"
+            style={{ backgroundColor: "rgba(0,0,0,0.4)" }}
+          />
         </View>
         <Text style={styles.title}>Create Account</Text>
         <Text style={styles.label}>Username</Text>

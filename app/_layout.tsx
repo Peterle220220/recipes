@@ -58,7 +58,6 @@ export default function Layout() {
     <View style={{ flex: 1 }}>
       <Stack initialRouteName="index">
         <Stack.Screen name="index" options={{ headerShown: false }} />
-        <Stack.Screen name="about" options={{ title: "About" }} />
         <Stack.Screen
           name="login"
           options={{ title: "Login", headerShown: false }}
@@ -67,7 +66,6 @@ export default function Layout() {
           name="RecipeDetail"
           options={{ title: "Recipe Detail", headerShown: false }}
         />
-        <Stack.Screen name="Account" options={{ title: "Account" }} />
         <Stack.Screen
           name="screens/EditProfileScreen"
           options={{ title: "Edit Profile", headerShown: false }}
@@ -84,10 +82,10 @@ export default function Layout() {
           name="screens/PreferencesScreen"
           options={{ title: "Preferences", headerShown: false }}
         />
-        <Stack.Screen
+        {/* <Stack.Screen
           name="screens/forgot-password"
           options={{ title: "Forgot Password" }}
-        />
+        /> */}
         <Stack.Screen
           name="screens/register"
           options={{ title: "Register", headerShown: false }}
