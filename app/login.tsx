@@ -17,8 +17,8 @@ import {
 } from "react-native";
 import { useTogglePasswordVisibility } from "./hooks/useTogglePasswordVisibility";
 import { api } from "./services/api";
-import { keyToken } from "./utils/storage_key";
 import { UserData } from "./services/user_data";
+import { keyToken } from "./utils/storage_key";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -52,9 +52,12 @@ export default function Login() {
       }
 
       // Store the token if needed
-      await AsyncStorage.setItem(keyToken, response.token);
 
-      UserData.init();
+      await Promise.all([
+        AsyncStorage.setItem(keyToken, response.token),
+        UserData.getInstance().fetchUser(),
+        UserData.init(),
+      ]);
 
       // Navigate to the main screen on successful login
       router.replace("/(tabs)/home" as Href);
@@ -115,6 +118,7 @@ export default function Login() {
               autoCapitalize="none"
               autoComplete="email"
               editable={!isLoading}
+              placeholderTextColor="#888"
             />
           </View>
           <View style={styles.inputContainer}>
@@ -127,6 +131,7 @@ export default function Login() {
               autoCapitalize="none"
               autoComplete="password"
               editable={!isLoading}
+              placeholderTextColor="#888"
             />
 
             <Pressable onPress={handlePasswordVisibility}>
@@ -198,7 +203,6 @@ const styles = StyleSheet.create({
   form: {
     width: "100%",
   },
-
   loginButton: {
     backgroundColor: "#007AFF",
     padding: 15,

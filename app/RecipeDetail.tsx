@@ -1,4 +1,4 @@
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useEffect, useState } from "react";
 import {
@@ -8,6 +8,7 @@ import {
   Modal,
   SafeAreaView,
   ScrollView,
+  Share,
   StyleSheet,
   Text,
   TextInput,
@@ -15,7 +16,43 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { api } from "./services/api";
+import { api, api_base } from "./services/api";
+import { UserData } from "./services/user_data";
+
+function StarRating({
+  rating,
+  onChange,
+  size = 28,
+  disabled = false,
+  center = false,
+}) {
+  return (
+    <View
+      style={{
+        flexDirection: "row",
+        marginVertical: 8,
+        alignItems: "center",
+        ...(center ? { justifyContent: "center" } : {}),
+      }}
+    >
+      {[1, 2, 3, 4, 5].map((star) => (
+        <TouchableOpacity
+          key={star}
+          onPress={() => !disabled && onChange(star)}
+          activeOpacity={0.7}
+          disabled={disabled}
+        >
+          <Ionicons
+            name={star <= rating ? "star" : "star-outline"}
+            size={size}
+            color="#ff9800"
+            style={{ marginHorizontal: 2 }}
+          />
+        </TouchableOpacity>
+      ))}
+    </View>
+  );
+}
 
 export default function RecipeDetail() {
   const insets = useSafeAreaInsets();
@@ -37,6 +74,7 @@ export default function RecipeDetail() {
   const [editContent, setEditContent] = useState("");
   const [editRating, setEditRating] = useState(0);
   const [commentSubmitting, setCommentSubmitting] = useState(false);
+  const [actionModal, setActionModal] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -81,6 +119,49 @@ export default function RecipeDetail() {
     }
   };
 
+  const handleShare = async () => {
+    try {
+      const ingredients = recipe.ingredients
+        ?.map(
+          (ing) =>
+            `- ${ing.amount ? `${ing.amount} ` : ""}${
+              ing.unit ? `${ing.unit} ` : ""
+            }${ing.name}`
+        )
+        .join("\n");
+
+      const steps = recipe.steps
+        ?.map((step, idx) => `${idx + 1}. ${step.description}`)
+        .join("\n");
+
+      const shareMessage = `
+🍳 ${recipe.title}
+
+👨‍🍳 By ${recipe.createdBy?.username}
+
+📝 Description:
+${recipe.description}
+
+🥗 Ingredients:
+${ingredients}
+
+📋 Instructions:
+${steps}
+
+⭐ Rating: ${recipe.rating || "Not rated yet"}
+
+Check out this recipe on our app!
+`;
+
+      await Share.share({
+        message: shareMessage,
+        title: recipe.title,
+      });
+    } catch (error) {
+      Alert.alert("Error", "Failed to share recipe");
+    }
+  };
+
   const handleEditComment = async () => {
     if (!editContent.trim() || editRating === 0) return;
     setCommentSubmitting(true);
@@ -121,13 +202,10 @@ export default function RecipeDetail() {
       <ScrollView style={{ flex: 1 }}>
         <View style={{ position: "relative" }}>
           <Image
-            source={{ uri: `http://10.3.2.41:3000/${recipe.mainImage}` }}
+            source={{ uri: `${api_base}/${recipe.mainImage}` }}
             style={{ width: "100%", height: 220 }}
           />
-          <View
-            style={[styles.backButtonContainer, { top: (insets.top || 0) + 8 }]}
-            pointerEvents="box-none"
-          >
+          <View style={[styles.backButtonContainer]} pointerEvents="box-none">
             <TouchableOpacity
               onPress={() => navigation.goBack()}
               style={styles.backButton}
@@ -135,6 +213,16 @@ export default function RecipeDetail() {
               hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
             >
               <Ionicons name="arrow-back" size={28} color="#fff" />
+            </TouchableOpacity>
+          </View>
+          <View style={styles.actionButtonContainer} pointerEvents="box-none">
+            <TouchableOpacity
+              onPress={() => setActionModal(true)}
+              style={styles.actionButton}
+              activeOpacity={0.7}
+              hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+            >
+              <MaterialIcons name="more-vert" size={28} color="#fff" />
             </TouchableOpacity>
           </View>
         </View>
@@ -165,11 +253,6 @@ export default function RecipeDetail() {
           <Text style={{ fontWeight: "bold", marginTop: 12 }}>
             Reviews ({comments.length})
           </Text>
-          <TouchableOpacity onPress={() => setCommentModal(true)}>
-            <Text style={{ color: "#ff9800", marginVertical: 8 }}>
-              Leave a Review
-            </Text>
-          </TouchableOpacity>
           {comments.map((c) => (
             <View
               key={c._id}
@@ -182,10 +265,21 @@ export default function RecipeDetail() {
               <Text style={{ fontWeight: "bold" }}>
                 {c.user?.username || "Anonymous"}
               </Text>
-              <Text>Rating: {c.rating} ⭐</Text>
+              <StarRating
+                rating={c.rating}
+                onChange={() => {}}
+                size={18}
+                disabled
+                center={false}
+              />
               <Text>{c.content}</Text>
             </View>
           ))}
+          <TouchableOpacity onPress={() => setCommentModal(true)}>
+            <Text style={{ color: "#ff9800", marginVertical: 8 }}>
+              Leave a Review
+            </Text>
+          </TouchableOpacity>
           <Text style={{ fontWeight: "bold", marginTop: 12 }}>
             You Might Also Like
           </Text>
@@ -206,22 +300,15 @@ export default function RecipeDetail() {
             ))}
           </ScrollView>
         </View>
-        {/* Modal cho comment mới */}
         <Modal visible={commentModal} transparent animationType="slide">
           <View style={styles.modalOverlay}>
             <View style={styles.modalContent}>
               <Text style={{ fontWeight: "bold" }}>Leave a Review</Text>
+              <StarRating rating={newRating} onChange={setNewRating} />
               <TextInput
                 placeholder="Your review..."
                 value={newComment}
                 onChangeText={setNewComment}
-                style={styles.input}
-              />
-              <TextInput
-                placeholder="Rating (1-5)"
-                value={String(newRating)}
-                onChangeText={(v) => setNewRating(Number(v))}
-                keyboardType="numeric"
                 style={styles.input}
               />
               <TouchableOpacity
@@ -240,7 +327,79 @@ export default function RecipeDetail() {
             </View>
           </View>
         </Modal>
-        {/* Modal edit và delete có thể bổ sung tương tự nếu cần */}
+        <Modal visible={actionModal} transparent animationType="fade">
+          <TouchableOpacity
+            style={styles.actionModalOverlay}
+            activeOpacity={1}
+            onPress={() => setActionModal(false)}
+          >
+            <View style={styles.actionModalContent}>
+              <TouchableOpacity
+                style={styles.actionOption}
+                onPress={() => {
+                  UserData.getInstance().addFavorite(recipe._id);
+                  setActionModal(false);
+                }}
+              >
+                {UserData.isFavorite(recipe._id) ? (
+                  <Ionicons
+                    name="heart"
+                    size={22}
+                    color="#ff9800"
+                    style={{ marginRight: 8 }}
+                  />
+                ) : (
+                  <Ionicons
+                    name="heart-outline"
+                    size={22}
+                    color="#ff9800"
+                    style={{ marginRight: 8 }}
+                  />
+                )}
+                <Text>Favorite</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.actionOption}
+                onPress={() => {
+                  UserData.getInstance().addBookmarked(recipe._id);
+                  setActionModal(false);
+                }}
+              >
+                {UserData.isBookmarked(recipe._id) ? (
+                  <Ionicons
+                    name="bookmark"
+                    size={22}
+                    color="#ff9800"
+                    style={{ marginRight: 8 }}
+                  />
+                ) : (
+                  <Ionicons
+                    name="bookmark-outline"
+                    size={22}
+                    color="#ff9800"
+                    style={{ marginRight: 8 }}
+                  />
+                )}
+                <Text>Bookmark</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.actionOption}
+                onPress={async () => {
+                  await handleShare();
+                  setActionModal(false);
+                }}
+              >
+                <Ionicons
+                  name="share-social-outline"
+                  size={22}
+                  color="#ff9800"
+                  style={{ marginRight: 8 }}
+                />
+                <Text>Share</Text>
+              </TouchableOpacity>
+            </View>
+          </TouchableOpacity>
+        </Modal>
       </ScrollView>
     </SafeAreaView>
   );
@@ -253,6 +412,19 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
   backButton: {
+    backgroundColor: "rgba(0,0,0,0.4)",
+    borderRadius: 20,
+    padding: 8,
+  },
+  actionButtonContainer: {
+    position: "absolute",
+    right: 16,
+    top: 0,
+    zIndex: 10,
+    height: 48,
+    justifyContent: "center",
+  },
+  actionButton: {
     backgroundColor: "rgba(0,0,0,0.4)",
     borderRadius: 20,
     padding: 8,
@@ -280,5 +452,30 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 12,
     alignItems: "center",
+  },
+  actionModalOverlay: {
+    flex: 1,
+    backgroundColor: "#0004",
+    justifyContent: "flex-start",
+    alignItems: "flex-end",
+  },
+  actionModalContent: {
+    backgroundColor: "#fff",
+    borderRadius: 8,
+    marginTop: 60,
+    marginRight: 16,
+    paddingVertical: 8,
+    minWidth: 160,
+    elevation: 4,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+  },
+  actionOption: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 12,
+    paddingHorizontal: 16,
   },
 });

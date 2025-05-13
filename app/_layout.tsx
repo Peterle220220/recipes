@@ -1,5 +1,5 @@
 import { useFonts } from "expo-font";
-import { Stack } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { View } from "react-native";
@@ -15,6 +15,8 @@ SplashScreen.setOptions({
 });
 
 export default function Layout() {
+  const router = useRouter();
+
   const [fontsLoaded, fontError] = useFonts({
     "SpaceMono-Regular": require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
@@ -65,11 +67,30 @@ export default function Layout() {
           name="RecipeDetail"
           options={{ title: "Recipe Detail", headerShown: false }}
         />
-
-        <Stack.Screen name="screens/register" options={{ title: "Register" }} />
+        <Stack.Screen name="Account" options={{ title: "Account" }} />
+        <Stack.Screen
+          name="screens/EditProfileScreen"
+          options={{ title: "Edit Profile", headerShown: false }}
+        />
+        <Stack.Screen
+          name="screens/CreateRecipe"
+          options={{ title: "Create Recipe", headerShown: false }}
+        />
+        <Stack.Screen
+          name="screens/ChangePasswordScreen"
+          options={{ title: "Change Password", headerShown: false }}
+        />
+        <Stack.Screen
+          name="screens/PreferencesScreen"
+          options={{ title: "Preferences", headerShown: false }}
+        />
         <Stack.Screen
           name="screens/forgot-password"
           options={{ title: "Forgot Password" }}
+        />
+        <Stack.Screen
+          name="screens/register"
+          options={{ title: "Register", headerShown: false }}
         />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       </Stack>

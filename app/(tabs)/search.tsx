@@ -6,6 +6,7 @@ import {
   Keyboard,
   Modal,
   Pressable,
+  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
@@ -98,225 +99,227 @@ export default function SearchScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-        <View style={{ flex: 1 }}>
-          <Text style={styles.title}>Search Recipes</Text>
-          <View style={styles.searchRow}>
-            <TextInput
-              style={styles.input}
-              placeholder="Search recipes..."
-              value={searchQuery}
-              onChangeText={setSearchQuery}
-              returnKeyType="search"
-              onSubmitEditing={handleSearch}
-            />
-            <TouchableOpacity
-              style={styles.searchButton}
-              onPress={handleSearch}
-            >
-              <Text style={styles.searchButtonText}>Search</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.filterButtonTop}
-              onPress={() => setShowFilter(true)}
-            >
-              <Text style={styles.filterButtonText}>Filter</Text>
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.tabRow}>
-            <TouchableOpacity
-              style={[
-                styles.tabButton,
-                activeTab === "latest" && styles.tabButtonActive,
-              ]}
-              onPress={() => setActiveTab("latest")}
-            >
-              <Text
-                style={[
-                  styles.tabText,
-                  activeTab === "latest" && styles.tabTextActive,
-                ]}
+    <SafeAreaView style={styles.container}>
+      <View style={styles.container}>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.title}>Search Recipes</Text>
+            <View style={styles.searchRow}>
+              <TextInput
+                style={styles.input}
+                placeholder="Search recipes..."
+                value={searchQuery}
+                onChangeText={setSearchQuery}
+                returnKeyType="search"
+                onSubmitEditing={handleSearch}
+              />
+              <TouchableOpacity
+                style={styles.searchButton}
+                onPress={handleSearch}
               >
-                Latest
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[
-                styles.tabButton,
-                activeTab === "popular" && styles.tabButtonActive,
-              ]}
-              onPress={() => setActiveTab("popular")}
-            >
-              <Text
-                style={[
-                  styles.tabText,
-                  activeTab === "popular" && styles.tabTextActive,
-                ]}
-              >
-                Popular
-              </Text>
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.divider} />
-
-          {loading ? (
-            <ActivityIndicator size="large" style={{ marginTop: 32 }} />
-          ) : searchResults.length > 0 ? (
-            <ScrollView style={{ flex: 1 }}>
-              {searchResults.map((item) => (
-                <TouchableOpacity
-                  onPress={() =>
-                    (navigation as any).navigate("RecipeDetail", {
-                      id: item._id,
-                    })
-                  }
-                  key={item._id}
-                >
-                  <View style={styles.card}>
-                    <View style={styles.cardImageWrapper}>
-                      <Image
-                        source={{
-                          uri: `http://10.3.2.41:3000/${item.mainImage}`,
-                        }}
-                        style={{ width: 70, height: 70 }}
-                      />
-                    </View>
-                    <View style={styles.cardContent}>
-                      <Text style={styles.cardTitle}>{item.title}</Text>
-                      <Text style={styles.cardSubtitle}>
-                        By {item.createdBy.username}
-                      </Text>
-                      {item.rating == 0 ? (
-                        <View></View>
-                      ) : (
-                        <Text>Rating: {item.rating} ⭐</Text>
-                      )}
-                    </View>
-                  </View>
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
-          ) : searchQuery ? (
-            <View style={{ alignItems: "center", marginTop: 32 }}>
-              <Text style={styles.noResultTitle}>No results found</Text>
-              <Text style={styles.noResultText}>
-                Try different keywords or filters.
-              </Text>
-            </View>
-          ) : (
-            <View style={{ alignItems: "center", marginTop: 32 }}>
-              <Text style={styles.noResultTitle}>
-                Enter a search term to find recipes
-              </Text>
-              <Text style={styles.noResultText}>
-                Search by recipe name, ingredients, or cuisine type
-              </Text>
-            </View>
-          )}
-
-          {error ? (
-            <View style={styles.errorBox}>
-              <Text style={styles.errorText}>{error}</Text>
-            </View>
-          ) : null}
-        </View>
-      </TouchableWithoutFeedback>
-
-      {/* Modal filter options */}
-      <Modal
-        visible={showFilter}
-        animationType="fade"
-        transparent
-        onRequestClose={() => setShowFilter(false)}
-      >
-        <Pressable
-          style={styles.popupOverlay}
-          onPress={() => setShowFilter(false)}
-        >
-          <Pressable
-            style={styles.popupContent}
-            onPress={(e) => e.stopPropagation()}
-          >
-            <Text style={styles.filterTitle}>Filters</Text>
-            <TextInput
-              style={styles.popupInput}
-              placeholder="e.g. chicken, tomato"
-              value={withIngredients}
-              onChangeText={setWithIngredients}
-            />
-            <TextInput
-              style={styles.popupInput}
-              placeholder="e.g. nuts, dairy"
-              value={withoutIngredients}
-              onChangeText={setWithoutIngredients}
-            />
-            <View style={styles.chipRow}>
-              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                {categories.map((cat) => (
-                  <TouchableOpacity
-                    key={cat}
-                    style={[
-                      styles.chip,
-                      selectedCategory === cat && styles.chipSelected,
-                    ]}
-                    onPress={() => setSelectedCategory(cat)}
-                  >
-                    <Text
-                      style={[
-                        styles.chipText,
-                        selectedCategory === cat && styles.chipTextSelected,
-                      ]}
-                    >
-                      {cat}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-              </ScrollView>
-            </View>
-            <View style={styles.chipRow}>
-              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                {cuisines.map((cui) => (
-                  <TouchableOpacity
-                    key={cui}
-                    style={[
-                      styles.chip,
-                      selectedCuisine === cui && styles.chipSelected,
-                    ]}
-                    onPress={() => setSelectedCuisine(cui)}
-                  >
-                    <Text
-                      style={[
-                        styles.chipText,
-                        selectedCuisine === cui && styles.chipTextSelected,
-                      ]}
-                    >
-                      {cui}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-              </ScrollView>
-            </View>
-            <View style={styles.filterButtonRow}>
-              <TouchableOpacity onPress={handleClearFilters}>
-                <Text style={styles.clearButton}>Clear</Text>
+                <Text style={styles.searchButtonText}>Search</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={styles.applyButton}
-                onPress={() => {
-                  setShowFilter(false);
-                  handleSearch();
-                }}
+                style={styles.filterButtonTop}
+                onPress={() => setShowFilter(true)}
               >
-                <Text style={styles.applyButtonText}>Apply</Text>
+                <Text style={styles.filterButtonText}>Filter</Text>
               </TouchableOpacity>
             </View>
+
+            <View style={styles.tabRow}>
+              <TouchableOpacity
+                style={[
+                  styles.tabButton,
+                  activeTab === "latest" && styles.tabButtonActive,
+                ]}
+                onPress={() => setActiveTab("latest")}
+              >
+                <Text
+                  style={[
+                    styles.tabText,
+                    activeTab === "latest" && styles.tabTextActive,
+                  ]}
+                >
+                  Latest
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  styles.tabButton,
+                  activeTab === "popular" && styles.tabButtonActive,
+                ]}
+                onPress={() => setActiveTab("popular")}
+              >
+                <Text
+                  style={[
+                    styles.tabText,
+                    activeTab === "popular" && styles.tabTextActive,
+                  ]}
+                >
+                  Popular
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.divider} />
+
+            {loading ? (
+              <ActivityIndicator size="large" style={{ marginTop: 32 }} />
+            ) : searchResults.length > 0 ? (
+              <ScrollView style={{ flex: 1 }}>
+                {searchResults.map((item) => (
+                  <TouchableOpacity
+                    onPress={() =>
+                      (navigation as any).navigate("RecipeDetail", {
+                        id: item._id,
+                      })
+                    }
+                    key={item._id}
+                  >
+                    <View style={styles.card}>
+                      <View style={styles.cardImageWrapper}>
+                        <Image
+                          source={{
+                            uri: `http://10.3.2.41:3000/${item.mainImage}`,
+                          }}
+                          style={{ width: 70, height: 70 }}
+                        />
+                      </View>
+                      <View style={styles.cardContent}>
+                        <Text style={styles.cardTitle}>{item.title}</Text>
+                        <Text style={styles.cardSubtitle}>
+                          By {item.createdBy.username}
+                        </Text>
+                        {item.rating == 0 ? (
+                          <View></View>
+                        ) : (
+                          <Text>Rating: {item.rating} ⭐</Text>
+                        )}
+                      </View>
+                    </View>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            ) : searchQuery ? (
+              <View style={{ alignItems: "center", marginTop: 32 }}>
+                <Text style={styles.noResultTitle}>No results found</Text>
+                <Text style={styles.noResultText}>
+                  Try different keywords or filters.
+                </Text>
+              </View>
+            ) : (
+              <View style={{ alignItems: "center", marginTop: 32 }}>
+                <Text style={styles.noResultTitle}>
+                  Enter a search term to find recipes
+                </Text>
+                <Text style={styles.noResultText}>
+                  Search by recipe name, ingredients, or cuisine type
+                </Text>
+              </View>
+            )}
+
+            {error ? (
+              <View style={styles.errorBox}>
+                <Text style={styles.errorText}>{error}</Text>
+              </View>
+            ) : null}
+          </View>
+        </TouchableWithoutFeedback>
+
+        {/* Modal filter options */}
+        <Modal
+          visible={showFilter}
+          animationType="fade"
+          transparent
+          onRequestClose={() => setShowFilter(false)}
+        >
+          <Pressable
+            style={styles.popupOverlay}
+            onPress={() => setShowFilter(false)}
+          >
+            <Pressable
+              style={styles.popupContent}
+              onPress={(e) => e.stopPropagation()}
+            >
+              <Text style={styles.filterTitle}>Filters</Text>
+              <TextInput
+                style={styles.popupInput}
+                placeholder="e.g. chicken, tomato"
+                value={withIngredients}
+                onChangeText={setWithIngredients}
+              />
+              <TextInput
+                style={styles.popupInput}
+                placeholder="e.g. nuts, dairy"
+                value={withoutIngredients}
+                onChangeText={setWithoutIngredients}
+              />
+              <View style={styles.chipRow}>
+                <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                  {categories.map((cat) => (
+                    <TouchableOpacity
+                      key={cat}
+                      style={[
+                        styles.chip,
+                        selectedCategory === cat && styles.chipSelected,
+                      ]}
+                      onPress={() => setSelectedCategory(cat)}
+                    >
+                      <Text
+                        style={[
+                          styles.chipText,
+                          selectedCategory === cat && styles.chipTextSelected,
+                        ]}
+                      >
+                        {cat}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
+              </View>
+              <View style={styles.chipRow}>
+                <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                  {cuisines.map((cui) => (
+                    <TouchableOpacity
+                      key={cui}
+                      style={[
+                        styles.chip,
+                        selectedCuisine === cui && styles.chipSelected,
+                      ]}
+                      onPress={() => setSelectedCuisine(cui)}
+                    >
+                      <Text
+                        style={[
+                          styles.chipText,
+                          selectedCuisine === cui && styles.chipTextSelected,
+                        ]}
+                      >
+                        {cui}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
+              </View>
+              <View style={styles.filterButtonRow}>
+                <TouchableOpacity onPress={handleClearFilters}>
+                  <Text style={styles.clearButton}>Clear</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.applyButton}
+                  onPress={() => {
+                    setShowFilter(false);
+                    handleSearch();
+                  }}
+                >
+                  <Text style={styles.applyButtonText}>Apply</Text>
+                </TouchableOpacity>
+              </View>
+            </Pressable>
           </Pressable>
-        </Pressable>
-      </Modal>
-    </View>
+        </Modal>
+      </View>
+    </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({

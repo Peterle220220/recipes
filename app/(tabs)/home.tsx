@@ -89,6 +89,7 @@ export default function HomeScreen() {
             style={styles.inputField}
             placeholder="Search for a recipe"
             readOnly={true}
+            placeholderTextColor="#888"
           />
         </TouchableOpacity>
       </View>
@@ -129,7 +130,6 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    paddingTop: 30,
   },
   container: {
     paddingHorizontal: 20,

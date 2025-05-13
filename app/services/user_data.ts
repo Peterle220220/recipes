@@ -14,11 +14,19 @@ export class UserData {
   private user: User | null = null;
 
   /// List id favorite
-  private favorite: string[] = [];
+  private favorite: any[] = [];
 
-  private bookmarked: string[] = [];
+  private bookmarked: any[] = [];
 
   private constructor() {}
+
+  public static isFavorite(recipeId: string): boolean {
+    return UserData.getInstance().favorite.includes(recipeId);
+  }
+
+  public static isBookmarked(recipeId: string): boolean {
+    return UserData.getInstance().bookmarked.includes(recipeId);
+  }
 
   public static getInstance(): UserData {
     if (!UserData.instance) {
@@ -31,11 +39,11 @@ export class UserData {
     return this.user;
   }
 
-  public static getFavorites(): string[] {
+  public static getFavorites(): any[] {
     return UserData.getInstance().favorite;
   }
 
-  public static getBookmarked(): string[] {
+  public static getBookmarked(): any[] {
     return UserData.getInstance().bookmarked;
   }
 
@@ -50,15 +58,15 @@ export class UserData {
     }
   }
 
-  public async fetchFavorite(): Promise<string[]> {
+  public async fetchFavorite(): Promise<any[]> {
     const favorite = await api.get("/users/favorites");
-    this.favorite = favorite.map((item) => item._id);
+    this.favorite = favorite;
     return favorite;
   }
 
-  public async fetchBookmarked(): Promise<string[]> {
+  public async fetchBookmarked(): Promise<any[]> {
     const bookmarked = await api.get("/users/bookmarks");
-    this.bookmarked = bookmarked.map((item) => item._id);
+    this.bookmarked = bookmarked;
     return bookmarked;
   }
 
@@ -69,7 +77,7 @@ export class UserData {
 
   public async removeFavorite(recipeId: string): Promise<void> {
     await api.delete(`/users/favorites/${recipeId}`);
-    this.favorite = this.favorite.filter((item) => item !== recipeId);
+    this.favorite = this.favorite.filter((item) => item._id !== recipeId);
   }
 
   public async addBookmarked(recipeId: string): Promise<void> {
@@ -79,7 +87,7 @@ export class UserData {
 
   public async removeBookmarked(recipeId: string): Promise<void> {
     await api.delete(`/users/bookmarks/${recipeId}`);
-    this.bookmarked = this.bookmarked.filter((item) => item !== recipeId);
+    this.bookmarked = this.bookmarked.filter((item) => item._id !== recipeId);
   }
 
   public async loadFromStorage(): Promise<User | null> {
@@ -109,3 +117,44 @@ export class UserData {
     await AsyncStorage.removeItem(keyUserData);
   }
 }
+
+// --- ADDITIONAL USER PROFILE API METHODS FOR ACCOUNT SCREEN ---
+
+/**
+ * Get current user profile (returns user data)
+ */
+export const getUserProfile = async () => {
+  return api.get("/users/profile");
+};
+
+/**
+ * Update user profile (PUT)
+ * @param {Object} profileData
+ */
+export const updateUserProfile = async (profileData: any) => {
+  return api.put("/users/profile", profileData);
+};
+
+/**
+ * Get user's created recipes (returns array)
+ */
+export const getUserRecipes = async () => {
+  return api.get("/users/recipes");
+};
+export const deleteAccount = async (password: string) => {
+  // Some APIs use DELETE with body, some with POST. Adjust as needed.
+  return api.post("/users/delete", { password });
+};
+
+export const register = async (username: string, email: string, password: string) => {
+  return api.post("/auth/register", { username, email, password });
+};
+
+// --- EXPORT DEFAULT userService OBJECT FOR EASY IMPORT ---
+const userService = {
+  getUserProfile,
+  updateUserProfile,
+  getUserRecipes,
+  deleteAccount,
+};
+export default userService;

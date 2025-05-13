@@ -4,14 +4,13 @@ import { useEffect } from "react";
 import { ActivityIndicator, Image, StyleSheet, View } from "react-native";
 import { UserData } from "./services/user_data";
 import { keyToken } from "./utils/storage_key";
-
 export default function Index() {
   useEffect(() => {
     const checkToken = async () => {
       const token = await AsyncStorage.getItem(keyToken);
-      await UserData.getInstance().fetchFavorite();
-      await UserData.getInstance().fetchBookmarked();
       if (token) {
+        await UserData.getInstance().fetchFavorite();
+        await UserData.getInstance().fetchBookmarked();
         router.replace("/(tabs)/home");
       } else {
         router.replace("/login" as Href);

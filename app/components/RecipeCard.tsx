@@ -21,8 +21,14 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
   const [isBookmarked, setIsBookmarked] = useState(false);
 
   useEffect(() => {
-    setIsFavorite(UserData.getFavorites().includes(recipeId));
-    setIsBookmarked(UserData.getBookmarked().includes(recipeId));
+    const isFav = UserData.getFavorites()
+      .map((item) => item._id)
+      .includes(recipeId);
+    const isBookmarked = UserData.getBookmarked()
+      .map((item) => item._id)
+      .includes(recipeId);
+    setIsFavorite(isFav);
+    setIsBookmarked(isBookmarked);
   }, []);
 
   const handleToggleFavorite = () => {
@@ -34,12 +40,12 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
     }
   };
 
-  const handleToggleMark = () => {
+  const handleToggleMark = async () => {
     setIsBookmarked(!isBookmarked);
     if (isBookmarked) {
-      UserData.getInstance().removeBookmarked(recipeId);
+      await UserData.getInstance().removeBookmarked(recipeId);
     } else {
-      UserData.getInstance().addBookmarked(recipeId);
+      await UserData.getInstance().addBookmarked(recipeId);
     }
   };
 
