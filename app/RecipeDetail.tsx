@@ -290,7 +290,7 @@ Check out this recipe on our app!
                 }
               >
                 <Image
-                  source={{ uri: `http://10.3.2.41:3000/${r.mainImage}` }}
+                  source={{ uri: `${api_base}/${r.mainImage}` }}
                   style={{ width: 100, height: 80, margin: 8, borderRadius: 8 }}
                 />
                 <Text style={{ width: 100 }}>{r.title}</Text>

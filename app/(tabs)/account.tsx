@@ -1,6 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
-import React, { useEffect, useState } from "react";
+import * as Notifications from "expo-notifications";
+import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -75,6 +76,36 @@ function AccountScreen() {
     };
     loadProfile();
   }, []);
+
+  useEffect(() => {
+    Notifications.setNotificationHandler({
+      handleNotification: async () => ({
+        shouldShowBanner: true,
+        shouldShowList: true,
+        shouldPlaySound: false,
+        shouldSetBadge: false,
+        severity: "default",
+      }),
+    });
+    requestNotificationPermission();
+  }, []);
+
+  const requestNotificationPermission = async () => {
+    const { status } = await Notifications.getPermissionsAsync();
+    if (status !== "granted") {
+      await Notifications.requestPermissionsAsync();
+    }
+  };
+
+  const handleSendNotification = async () => {
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: "Hello!",
+        body: "This is a local notification.",
+      },
+      trigger: null,
+    });
+  };
 
   // Save profile
   const handleSaveProfile = async () => {
@@ -171,6 +202,16 @@ function AccountScreen() {
           <Text style={styles.email}>{email}</Text>
           <Text style={styles.location}>{location}</Text>
           <Text style={styles.recipeCount}>{recipeCount} Recipes Created</Text>
+        </View>
+
+        {/* Thêm nút Notify vào đầu trang, sau phần avatar */}
+        <View style={{ alignItems: "center", marginBottom: 16 }}>
+          <TouchableOpacity
+            onPress={handleSendNotification}
+            style={styles.notifyButton}
+          >
+            <Text style={styles.notifyButtonText}>Notify</Text>
+          </TouchableOpacity>
         </View>
 
         {/* Alerts */}
@@ -421,6 +462,17 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   actionButtonText: { color: "#ffa726", fontWeight: "bold", fontSize: 16 },
+  notifyButton: {
+    backgroundColor: "#007AFF",
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    marginTop: 8,
+  },
+  notifyButtonText: {
+    color: "#fff",
+    fontWeight: "bold",
+  },
 });
 
 export default AccountScreen;
