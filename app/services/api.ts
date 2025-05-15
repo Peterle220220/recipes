@@ -4,7 +4,7 @@ import { router } from "expo-router";
 import { Alert } from "react-native"; // Optional: for basic error alerts
 
 // --- Configuration ---
-export const api_base = "http://10.3.2.41:3000";
+export const api_base = "http://10.3.2.144:3000";
 // IMPORTANT: Choose the correct Base URL based on your testing environment
 // const API_BASE_URL = 'http://localhost:5000/api';      // For iOS Simulator
 // const API_BASE_URL = 'http://10.0.2.2:5000/api';     // For Android Emulator
@@ -28,11 +28,11 @@ apiClient.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`; // Set the token in the headers
     }
-    console.log(
-      `Requesting: ${config.method?.toUpperCase()} ${config.url}`,
-      config.params || "",
-      config.data || ""
-    );
+    // console.log(
+    //   `Requesting: ${config.method?.toUpperCase()} ${config.url}`,
+    //   config.params || "",
+    //   config.data || ""
+    // );
     return config;
   },
   (error) => {
@@ -43,10 +43,10 @@ apiClient.interceptors.request.use(
 
 apiClient.interceptors.response.use(
   (response) => {
-    console.log(
-      `Response: ${response.status} ${response.config.url}`,
-      response.data
-    );
+    // console.log(
+    //   `Response: ${response.status} ${response.config.url}`,
+    //   response.data
+    // );
     // Process successful responses
     return response; // Return the full response object initially
   },
@@ -193,4 +193,4 @@ export const api = {
 };
 
 // You could also export the apiClient instance if needed elsewhere
-// export { apiClient };
+export { apiClient };

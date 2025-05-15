@@ -1,4 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as Notifications from "expo-notifications";
 import { keyUserData } from "../utils/storage_key";
 import { api } from "./api";
 
@@ -146,7 +147,11 @@ export const deleteAccount = async (password: string) => {
   return api.post("/users/delete", { password });
 };
 
-export const register = async (username: string, email: string, password: string) => {
+export const register = async (
+  username: string,
+  email: string,
+  password: string
+) => {
   return api.post("/auth/register", { username, email, password });
 };
 
@@ -158,3 +163,33 @@ const userService = {
   deleteAccount,
 };
 export default userService;
+
+export async function handleNotification({
+  title,
+  body,
+  trigger = null,
+}: {
+  title: string;
+  body: string;
+  trigger?: any;
+}) {
+  await Notifications.scheduleNotificationAsync({
+    content: {
+      title,
+      body,
+    },
+    trigger,
+  });
+}
+
+export function initNotificationSystem() {
+  Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldShowBanner: true,
+      shouldShowList: true,
+      shouldPlaySound: false,
+      shouldSetBadge: false,
+      severity: "default",
+    }),
+  });
+}
