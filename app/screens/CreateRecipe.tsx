@@ -131,35 +131,76 @@ export default function CreateRecipe() {
     setSteps(newSteps);
   };
 
-  const pickMainImage = async () => {
-    const permissionResult =
-      await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (!permissionResult.granted) {
-      Alert.alert(
-        "Permission required",
-        "Permission to access media library is required!"
-      );
-      return;
-    }
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 0.8,
-    });
-    if (!result.canceled && result.assets && result.assets.length > 0) {
-      setUploadingImage(true);
-      try {
-        const file = result.assets[0];
-        const uploadRes = await uploadImage(file);
-        setMainImageUrl(uploadRes.imageUrl);
-      } catch (err: any) {
-        Alert.alert("Error", err.message || "Failed to upload image");
-        setMainImageUrl("");
-      } finally {
-        setUploadingImage(false);
-      }
-    }
+  const pickImageSource = async () => {
+    Alert.alert("Select Image Source", "Choose an option", [
+      {
+        text: "Take Photo",
+        onPress: async () => {
+          const permissionResult =
+            await ImagePicker.requestCameraPermissionsAsync();
+          if (!permissionResult.granted) {
+            Alert.alert(
+              "Permission required",
+              "Permission to access camera is required!"
+            );
+            return;
+          }
+          const result = await ImagePicker.launchCameraAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 0.8,
+          });
+          if (!result.canceled && result.assets && result.assets.length > 0) {
+            setUploadingImage(true);
+            try {
+              const file = result.assets[0];
+              const uploadRes = await uploadImage(file);
+              setMainImageUrl(uploadRes.imageUrl);
+            } catch (err: any) {
+              Alert.alert("Error", err.message || "Failed to upload image");
+              setMainImageUrl("");
+            } finally {
+              setUploadingImage(false);
+            }
+          }
+        },
+      },
+      {
+        text: "Choose from Library",
+        onPress: async () => {
+          const permissionResult =
+            await ImagePicker.requestMediaLibraryPermissionsAsync();
+          if (!permissionResult.granted) {
+            Alert.alert(
+              "Permission required",
+              "Permission to access media library is required!"
+            );
+            return;
+          }
+          const result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 0.8,
+          });
+          if (!result.canceled && result.assets && result.assets.length > 0) {
+            setUploadingImage(true);
+            try {
+              const file = result.assets[0];
+              const uploadRes = await uploadImage(file);
+              setMainImageUrl(uploadRes.imageUrl);
+            } catch (err: any) {
+              Alert.alert("Error", err.message || "Failed to upload image");
+              setMainImageUrl("");
+            } finally {
+              setUploadingImage(false);
+            }
+          }
+        },
+      },
+      { text: "Cancel", style: "cancel" },
+    ]);
   };
 
   const handleSubmit = async () => {
@@ -401,7 +442,7 @@ export default function CreateRecipe() {
             <Button
               title="Pick image"
               onPress={() => {
-                pickMainImage();
+                pickImageSource();
                 setFieldErrors((e) => ({ ...e, mainImage: false }));
               }}
             />

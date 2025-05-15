@@ -15,6 +15,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import ImageViewer from "react-native-image-zoom-viewer";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import BackButton from "./screens/components/BackButton";
 import { api, api_base } from "./services/api";
@@ -76,6 +77,7 @@ export default function RecipeDetail() {
   const [editRating, setEditRating] = useState(0);
   const [commentSubmitting, setCommentSubmitting] = useState(false);
   const [actionModal, setActionModal] = useState(false);
+  const [imageViewerVisible, setImageViewerVisible] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -202,10 +204,15 @@ Check out this recipe on our app!
     <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
       <ScrollView style={{ flex: 1 }}>
         <View style={{ position: "relative" }}>
-          <Image
-            source={{ uri: `${api_base}/${recipe.mainImage}` }}
-            style={{ width: "100%", height: 220 }}
-          />
+          <TouchableOpacity
+            activeOpacity={0.9}
+            onPress={() => setImageViewerVisible(true)}
+          >
+            <Image
+              source={{ uri: `${api_base}/${recipe.mainImage}` }}
+              style={{ width: "100%", height: 220 }}
+            />
+          </TouchableOpacity>
           <View style={[styles.backButtonContainer]} pointerEvents="box-none">
             <BackButton
               onPress={() => navigation.goBack()}
@@ -397,6 +404,34 @@ Check out this recipe on our app!
               </TouchableOpacity>
             </View>
           </TouchableOpacity>
+        </Modal>
+        <Modal
+          visible={imageViewerVisible}
+          transparent={true}
+          onRequestClose={() => setImageViewerVisible(false)}
+        >
+          <View style={{ flex: 1, backgroundColor: "#000" }}>
+            <BackButton
+              onPress={() => setImageViewerVisible(false)}
+              color="#fff"
+              style={{
+                position: "absolute",
+                top: 40,
+                left: 20,
+                zIndex: 10,
+                backgroundColor: "rgba(0,0,0,0.5)",
+              }}
+            />
+            <ImageViewer
+              imageUrls={[{ url: `${api_base}/${recipe.mainImage}` }]}
+              enableSwipeDown
+              onSwipeDown={() => setImageViewerVisible(false)}
+              onCancel={() => setImageViewerVisible(false)}
+              renderIndicator={() => null}
+              backgroundColor="#000"
+              saveToLocalByLongPress={false}
+            />
+          </View>
         </Modal>
       </ScrollView>
     </SafeAreaView>
