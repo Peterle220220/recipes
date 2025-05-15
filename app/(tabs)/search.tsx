@@ -1,5 +1,5 @@
 import { useNavigation } from "@react-navigation/native";
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   ActivityIndicator,
   Keyboard,
@@ -14,8 +14,8 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
-import { api } from "../services/api";
 import RecipeCardHorizontal from "../components/RecipeCardHorizontal";
+import { api } from "../services/api";
 
 const categories = [
   "Breakfast",
@@ -79,10 +79,10 @@ export default function SearchScreen() {
             `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`
         )
         .join("&");
-      console.log(queryString);
+      // console.log(queryString);
       const endpoint = `/search${queryString ? "?" + queryString : ""}`;
       const response = await api.get(endpoint);
-      console.log(response.recipes);
+      // console.log(response.recipes);
       setSearchResults(response.recipes || []);
     } catch (e) {
       setError("Search failed. Please try again.");

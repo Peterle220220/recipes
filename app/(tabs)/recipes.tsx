@@ -102,7 +102,7 @@ export default function RecipesScreen() {
     if (reset) setLoading(true);
     else setLoadingMoreMyRecipes(true);
     const myData = await getUserRecipes();
-    console.log(JSON.stringify(myData, null, 2));
+    // console.log(JSON.stringify(myData, null, 2));
     if (reset) setMyRecipes(myData);
     else setMyRecipes((prev) => mergeUnique(prev, myData));
     setHasMoreMyRecipes(myData.length >= recipesPerPage);

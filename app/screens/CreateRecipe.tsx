@@ -55,10 +55,11 @@ async function uploadImage(imageFile: any) {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
-        "Content-Type": "multipart/form-data",
+        Accept: "application/json",
       },
       body: formData,
     });
+    console.log(response);
     const data = await response.json();
     if (!response.ok) throw new Error(data.message || "Upload failed");
     if (data.imageUrl && data.imageUrl.startsWith("/uploads/")) {
@@ -218,7 +219,12 @@ export default function CreateRecipe() {
         },
       };
       const created = await createRecipe(recipeData);
-      console.log(created);
+      // handleNotification({
+      //   title: `Recipe ${created.title} created`,
+      //   body: "Your recipe has been created successfully!",
+      //   trigger: null,
+      // });
+      // console.log(created);
       Alert.alert("Success", "Recipe created successfully!", [
         { text: "View details", onPress: () => navigation.goBack() },
       ]);

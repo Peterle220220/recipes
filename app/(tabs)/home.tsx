@@ -13,7 +13,7 @@ import {
   View,
 } from "react-native";
 import RecipeCard from "../components/RecipeCard";
-import { api } from "../services/api";
+import { api, api_base } from "../services/api";
 
 export default function HomeScreen() {
   const navigation = useNavigation();
@@ -62,7 +62,7 @@ export default function HomeScreen() {
     ({ item }) => (
       <RecipeCard
         key={item._id}
-        imageSource={`http://10.3.2.41:3000/${item.mainImage}`}
+        imageSource={`${api_base}/${item.mainImage}`}
         recipeName={item.title}
         recipeId={item._id}
         onPress={() =>

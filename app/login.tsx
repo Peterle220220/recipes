@@ -45,7 +45,7 @@ export default function Login() {
 
       const response: any = await api.post("/auth/login", loginData);
 
-      console.log(response);
+      // console.log(response);
 
       if (!response) {
         throw new Error("No data received from server");
