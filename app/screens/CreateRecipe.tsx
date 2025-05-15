@@ -21,6 +21,7 @@ import {
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
 import { api, api_base } from "../services/api";
+import { handleNotification } from "../services/user_data";
 import { keyToken } from "../utils/storage_key";
 import BackButton from "./components/BackButton";
 
@@ -260,11 +261,11 @@ export default function CreateRecipe() {
         },
       };
       const created = await createRecipe(recipeData);
-      // handleNotification({
-      //   title: `Recipe ${created.title} created`,
-      //   body: "Your recipe has been created successfully!",
-      //   trigger: null,
-      // });
+      handleNotification({
+        title: `Recipe ${recipeData.title} created`,
+        body: "Your recipe has been created successfully!",
+        trigger: null,
+      });
       // console.log(created);
       Alert.alert("Success", "Recipe created successfully!", [
         { text: "View details", onPress: () => navigation.goBack() },
