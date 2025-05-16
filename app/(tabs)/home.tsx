@@ -83,16 +83,17 @@ export default function HomeScreen() {
           source={require("../../assets/images/splash.png")}
         />
       </View>
-      <View style={styles.inputContainer}>
-        <TouchableOpacity onPress={handleSearch}>
+      <TouchableOpacity onPress={handleSearch}>
+        <View style={styles.inputContainer}>
           <TextInput
             style={styles.inputField}
             placeholder="Search for a recipe"
-            readOnly={true}
+            editable={false}
+            pointerEvents="none"
             placeholderTextColor="#888"
           />
-        </TouchableOpacity>
-      </View>
+        </View>
+      </TouchableOpacity>
       <Text style={styles.popularText}>Popular Recipes</Text>
       <FlatList
         data={recipes}
