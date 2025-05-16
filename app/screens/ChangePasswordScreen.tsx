@@ -1,5 +1,5 @@
 import { useNavigation } from "@react-navigation/native";
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   ActivityIndicator,
   StyleSheet,
@@ -70,6 +70,7 @@ export default function ChangePasswordScreen() {
         value={currentPassword}
         onChangeText={setCurrentPassword}
         secureTextEntry
+        placeholderTextColor="#888"
       />
       <TextInput
         style={styles.input}
@@ -77,6 +78,7 @@ export default function ChangePasswordScreen() {
         value={newPassword}
         onChangeText={setNewPassword}
         secureTextEntry
+        placeholderTextColor="#888"
       />
       <TextInput
         style={styles.input}
@@ -84,6 +86,7 @@ export default function ChangePasswordScreen() {
         value={confirmPassword}
         onChangeText={setConfirmPassword}
         secureTextEntry
+        placeholderTextColor="#888"
       />
       <TouchableOpacity
         style={styles.saveButton}

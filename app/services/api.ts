@@ -4,7 +4,7 @@ import { router } from "expo-router";
 import { Alert } from "react-native"; // Optional: for basic error alerts
 
 // --- Configuration ---
-export const api_base = "http://10.3.2.144:3000";
+export const api_base = "http://10.3.2.220:3000";
 // IMPORTANT: Choose the correct Base URL based on your testing environment
 // const API_BASE_URL = 'http://localhost:5000/api';      // For iOS Simulator
 // const API_BASE_URL = 'http://10.0.2.2:5000/api';     // For Android Emulator

@@ -1,5 +1,5 @@
 import { useNavigation, useRoute } from "@react-navigation/native";
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   ActivityIndicator,
   StyleSheet,
@@ -57,18 +57,21 @@ export default function EditProfileScreen() {
         placeholder="Display Name"
         value={username}
         onChangeText={setUsername}
+        placeholderTextColor="#888"
       />
       <TextInput
         style={styles.input}
         placeholder="Email"
         value={email}
         onChangeText={setEmail}
+        placeholderTextColor="#888"
       />
       <TextInput
         style={styles.input}
         placeholder="Location"
         value={location}
         onChangeText={setLocation}
+        placeholderTextColor="#888"
       />
       <TouchableOpacity
         style={styles.saveButton}

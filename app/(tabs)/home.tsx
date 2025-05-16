@@ -1,3 +1,4 @@
+import * as Notifications from "expo-notifications";
 import { router, useNavigation } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import {
@@ -14,7 +15,6 @@ import {
 } from "react-native";
 import RecipeCard from "../components/RecipeCard";
 import { api, api_base } from "../services/api";
-
 export default function HomeScreen() {
   const navigation = useNavigation();
   const [recipes, setRecipes] = useState([]);
@@ -42,7 +42,23 @@ export default function HomeScreen() {
     }
   };
 
+  const requestNotificationPermission = async () => {
+    const { status } = await Notifications.getPermissionsAsync();
+    if (status !== "granted") {
+      await Notifications.requestPermissionsAsync();
+    }
+  };
   useEffect(() => {
+    Notifications.setNotificationHandler({
+      handleNotification: async () => ({
+        shouldShowBanner: true,
+        shouldShowList: true,
+        shouldPlaySound: false,
+        shouldSetBadge: false,
+        severity: "default",
+      }),
+    });
+    requestNotificationPermission();
     fetchRecipes();
     fetchRecipesRecent();
   }, []);

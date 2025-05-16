@@ -49,7 +49,7 @@ async function uploadImage(imageFile: any) {
   formData.append("image", {
     uri: imageFile.uri,
     name: imageFile.fileName || "photo.jpg",
-    type: imageFile.type || "image/jpeg",
+    type: "image/jpeg",
   } as any);
   try {
     const response = await fetch(`${api_base}/api/upload`, {
