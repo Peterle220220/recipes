@@ -48,7 +48,7 @@ async function uploadImage(imageFile: any) {
   const formData = new FormData();
   formData.append("image", {
     uri: imageFile.uri,
-    name: imageFile.fileName || "photo.jpg",
+    name: "photo.jpg",
     type: "image/jpeg",
   } as any);
   try {
@@ -60,12 +60,12 @@ async function uploadImage(imageFile: any) {
       },
       body: formData,
     });
-    console.log(response);
     const data = await response.json();
     if (!response.ok) throw new Error(data.message || "Upload failed");
     if (data.imageUrl && data.imageUrl.startsWith("/uploads/")) {
-      data.imageUrl = data.imageUrl.replace("/uploads/", "uploads/");
+      data.imageUrl = data.imageUrl.replace("/uploads/", "uploads\\");
     }
+    console.log("Upload response:", data.imageUrl);
     return data;
   } catch (error) {
     console.error("Upload error:", error);
@@ -157,10 +157,12 @@ export default function CreateRecipe() {
             try {
               const file = result.assets[0];
               const uploadRes = await uploadImage(file);
+              console.log("Upload result:", uploadRes);
               setMainImageUrl(uploadRes.imageUrl);
             } catch (err: any) {
               Alert.alert("Error", err.message || "Failed to upload image");
               setMainImageUrl("");
+              console.log("Upload error:", err);
             } finally {
               setUploadingImage(false);
             }

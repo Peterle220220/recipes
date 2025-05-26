@@ -9,11 +9,16 @@ export default function Index() {
   useEffect(() => {
     const checkToken = async () => {
       const token = await AsyncStorage.getItem(keyToken);
-      if (token) {
-        await UserData.getInstance().fetchFavorite();
-        await UserData.getInstance().fetchBookmarked();
-        router.replace("/(tabs)/home");
-      } else {
+      try {
+        if (token) {
+          await UserData.getInstance().fetchFavorite();
+          await UserData.getInstance().fetchBookmarked();
+          router.replace("/(tabs)/home");
+        } else {
+          router.replace("/login" as Href);
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
         router.replace("/login" as Href);
       }
     };

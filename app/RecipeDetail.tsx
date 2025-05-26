@@ -127,8 +127,7 @@ export default function RecipeDetail() {
       const ingredients = recipe.ingredients
         ?.map(
           (ing) =>
-            `- ${ing.amount ? `${ing.amount} ` : ""}${
-              ing.unit ? `${ing.unit} ` : ""
+            `- ${ing.amount ? `${ing.amount} ` : ""}${ing.unit ? `${ing.unit} ` : ""
             }${ing.name}`
         )
         .join("\n");
@@ -272,7 +271,7 @@ Check out this recipe on our app!
               </Text>
               <StarRating
                 rating={c.rating}
-                onChange={() => {}}
+                onChange={() => { }}
                 size={18}
                 disabled
                 center={false}
@@ -435,6 +434,7 @@ Check out this recipe on our app!
         </Modal>
       </ScrollView>
     </SafeAreaView>
+
   );
 }
 
