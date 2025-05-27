@@ -14,7 +14,6 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import RecipeCardHorizontal from "../components/RecipeCardHorizontal";
 import { UserData, getUserRecipes } from "../services/user_data";
-// import Icon from 'react-native-vector-icons/MaterialCommunityIcons'; // Nếu bạn dùng icon
 
 export default function RecipesScreen() {
   const navigation = useNavigation();

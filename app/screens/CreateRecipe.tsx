@@ -37,13 +37,11 @@ const CUISINE_OPTIONS = [
 const CATEGORY_OPTIONS = ["Breakfast", "Lunch", "Dinner", "Dessert", "Snack"];
 
 async function createRecipe(recipeData: any) {
-  // Giả lập API, thay bằng api.post thực tế
   return api.post("/recipes", recipeData);
 }
 
 async function uploadImage(imageFile: any) {
   if (!imageFile) throw new Error("No file provided");
-  // Giả lập lấy token, bạn cần thay bằng authService.getToken() thực tế
   const token = await AsyncStorage.getItem(keyToken);
   const formData = new FormData();
   formData.append("image", {
@@ -76,7 +74,7 @@ async function uploadImage(imageFile: any) {
 export default function CreateRecipe() {
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
-  // State cho các trường cơ bản
+  // State for basic fields
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [servings, setServings] = useState("4");

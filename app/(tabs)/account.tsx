@@ -14,9 +14,9 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import userService from "../services/user_data"; // Giả sử bạn đã có file này
+import userService from "../services/user_data"; // Assuming you have this file
 import { keyToken, keyUserData } from "../utils/storage_key";
-// import AsyncStorage from '@react-native-async-storage/async-storage'; // Nếu cần
+// import AsyncStorage from '@react-native-async-storage/async-storage'; // If needed
 
 function AccountScreen() {
   const navigation = useNavigation();
@@ -76,8 +76,6 @@ function AccountScreen() {
     };
     loadProfile();
   }, []);
-
-  
 
   const handleSendNotification = async () => {
     await Notifications.scheduleNotificationAsync({
