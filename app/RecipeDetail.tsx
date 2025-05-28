@@ -1,6 +1,11 @@
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
-import { useNavigation, useRoute } from "@react-navigation/native";
-import { useEffect, useState } from "react";
+import {
+  useFocusEffect,
+  useNavigation,
+  useRoute,
+} from "@react-navigation/native";
+import { router } from "expo-router";
+import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -19,7 +24,7 @@ import ImageViewer from "react-native-image-zoom-viewer";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import BackButton from "./screens/components/BackButton";
 import { api, api_base } from "./services/api";
-import { UserData } from "./services/user_data";
+import { handleNotification, UserData } from "./services/user_data";
 
 function StarRating({
   rating,
@@ -78,10 +83,27 @@ export default function RecipeDetail() {
   const [commentSubmitting, setCommentSubmitting] = useState(false);
   const [actionModal, setActionModal] = useState(false);
   const [imageViewerVisible, setImageViewerVisible] = useState(false);
+  const [isOwner, setIsOwner] = useState(false);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchData();
+    }, [id])
+  );
 
   useEffect(() => {
-    fetchData();
-  }, [id]);
+    const checkOwnership = async () => {
+      try {
+        const userData = await UserData.getInstance().getUser();
+        setIsOwner(userData?.id === recipe?.createdBy?.id);
+      } catch (error) {
+        console.error("Error checking ownership:", error);
+      }
+    };
+    if (recipe) {
+      checkOwnership();
+    }
+  }, [recipe]);
 
   const fetchData = async () => {
     setLoading(true);
@@ -127,7 +149,8 @@ export default function RecipeDetail() {
       const ingredients = recipe.ingredients
         ?.map(
           (ing) =>
-            `- ${ing.amount ? `${ing.amount} ` : ""}${ing.unit ? `${ing.unit} ` : ""
+            `- ${ing.amount ? `${ing.amount} ` : ""}${
+              ing.unit ? `${ing.unit} ` : ""
             }${ing.name}`
         )
         .join("\n");
@@ -271,7 +294,7 @@ Check out this recipe on our app!
               </Text>
               <StarRating
                 rating={c.rating}
-                onChange={() => { }}
+                onChange={() => {}}
                 size={18}
                 disabled
                 center={false}
@@ -338,6 +361,74 @@ Check out this recipe on our app!
             onPress={() => setActionModal(false)}
           >
             <View style={styles.actionModalContent}>
+              {isOwner && (
+                <>
+                  <TouchableOpacity
+                    style={styles.actionOption}
+                    onPress={() => {
+                      setActionModal(false);
+                      router.push({
+                        pathname: "/screens/EditRecipe",
+                        params: { id: id },
+                      });
+                    }}
+                  >
+                    <Ionicons
+                      name="create-outline"
+                      size={24}
+                      color="#222"
+                      style={styles.actionIcon}
+                    />
+                    <Text style={[styles.actionText, { color: "#222" }]}>
+                      Edit Recipe
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.actionOption}
+                    onPress={() => {
+                      setActionModal(false);
+                      Alert.alert(
+                        "Delete Recipe",
+                        "Are you sure you want to delete this recipe? This action cannot be undone.",
+                        [
+                          { text: "Cancel", style: "cancel" },
+                          {
+                            text: "Delete",
+                            style: "destructive",
+                            onPress: async () => {
+                              try {
+                                await api.delete(`/recipes/${recipe._id}`);
+                                handleNotification({
+                                  title: "Recipe deleted",
+                                  body: "Your recipe has been deleted successfully!",
+                                  trigger: null,
+                                });
+                                navigation.goBack();
+                              } catch (err: any) {
+                                Alert.alert(
+                                  "Error",
+                                  err.message || "Failed to delete recipe."
+                                );
+                              }
+                            },
+                          },
+                        ]
+                      );
+                    }}
+                  >
+                    <Ionicons
+                      name="trash-outline"
+                      size={24}
+                      color="#E53935"
+                      style={styles.actionIcon}
+                    />
+                    <Text style={[styles.actionText, { color: "#E53935" }]}>
+                      Delete Recipe
+                    </Text>
+                  </TouchableOpacity>
+                </>
+              )}
+
               <TouchableOpacity
                 style={styles.actionOption}
                 onPress={() => {
@@ -345,22 +436,17 @@ Check out this recipe on our app!
                   setActionModal(false);
                 }}
               >
-                {UserData.isFavorite(recipe._id) ? (
-                  <Ionicons
-                    name="heart"
-                    size={22}
-                    color="#ff9800"
-                    style={{ marginRight: 8 }}
-                  />
-                ) : (
-                  <Ionicons
-                    name="heart-outline"
-                    size={22}
-                    color="#ff9800"
-                    style={{ marginRight: 8 }}
-                  />
-                )}
-                <Text>Favorite</Text>
+                <Ionicons
+                  name={
+                    UserData.isFavorite(recipe._id) ? "heart" : "heart-outline"
+                  }
+                  size={24}
+                  color="#ff9800"
+                  style={styles.actionIcon}
+                />
+                <Text style={[styles.actionText, { color: "#ff9800" }]}>
+                  Favorite
+                </Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.actionOption}
@@ -369,22 +455,19 @@ Check out this recipe on our app!
                   setActionModal(false);
                 }}
               >
-                {UserData.isBookmarked(recipe._id) ? (
-                  <Ionicons
-                    name="bookmark"
-                    size={22}
-                    color="#ff9800"
-                    style={{ marginRight: 8 }}
-                  />
-                ) : (
-                  <Ionicons
-                    name="bookmark-outline"
-                    size={22}
-                    color="#ff9800"
-                    style={{ marginRight: 8 }}
-                  />
-                )}
-                <Text>Bookmark</Text>
+                <Ionicons
+                  name={
+                    UserData.isBookmarked(recipe._id)
+                      ? "bookmark"
+                      : "bookmark-outline"
+                  }
+                  size={24}
+                  color="#ff9800"
+                  style={styles.actionIcon}
+                />
+                <Text style={[styles.actionText, { color: "#ff9800" }]}>
+                  Bookmark
+                </Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.actionOption}
@@ -395,11 +478,13 @@ Check out this recipe on our app!
               >
                 <Ionicons
                   name="share-social-outline"
-                  size={22}
+                  size={24}
                   color="#ff9800"
-                  style={{ marginRight: 8 }}
+                  style={styles.actionIcon}
                 />
-                <Text>Share</Text>
+                <Text style={[styles.actionText, { color: "#ff9800" }]}>
+                  Share
+                </Text>
               </TouchableOpacity>
             </View>
           </TouchableOpacity>
@@ -434,7 +519,6 @@ Check out this recipe on our app!
         </Modal>
       </ScrollView>
     </SafeAreaView>
-
   );
 }
 
@@ -508,7 +592,16 @@ const styles = StyleSheet.create({
   actionOption: {
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 12,
-    paddingHorizontal: 16,
+    paddingVertical: 14,
+    paddingHorizontal: 20,
+    borderBottomWidth: 1,
+    borderColor: "#f2f2f2",
+  },
+  actionIcon: {
+    marginRight: 14,
+  },
+  actionText: {
+    fontSize: 17,
+    fontWeight: "500",
   },
 });

@@ -1,5 +1,6 @@
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import * as Notifications from "expo-notifications";
-import { router, useNavigation } from "expo-router";
+import { router } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import {
   Alert,
@@ -15,6 +16,7 @@ import {
 } from "react-native";
 import RecipeCard from "../components/RecipeCard";
 import { api, api_base } from "../services/api";
+
 export default function HomeScreen() {
   const navigation = useNavigation();
   const [recipes, setRecipes] = useState([]);
@@ -48,6 +50,7 @@ export default function HomeScreen() {
       await Notifications.requestPermissionsAsync();
     }
   };
+
   useEffect(() => {
     Notifications.setNotificationHandler({
       handleNotification: async () => ({
@@ -62,6 +65,13 @@ export default function HomeScreen() {
     fetchRecipes();
     fetchRecipesRecent();
   }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchRecipes();
+      fetchRecipesRecent();
+    }, [])
+  );
 
   const onRefresh = async () => {
     setRefreshing(true);
