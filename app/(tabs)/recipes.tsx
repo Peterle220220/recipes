@@ -135,12 +135,15 @@ export default function RecipesScreen() {
   };
 
   const renderRecipe = ({ item }) => (
-    <RecipeCardHorizontal
-      item={item}
-      onPress={() =>
-        (navigation as any).navigate("RecipeDetail", { id: item._id })
-      }
-    />
+    console.log(item),
+    (
+      <RecipeCardHorizontal
+        item={item}
+        onPress={() =>
+          (navigation as any).navigate("RecipeDetail", { id: item._id })
+        }
+      />
+    )
   );
 
   const getRecipes = () => {

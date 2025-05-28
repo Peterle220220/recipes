@@ -95,7 +95,7 @@ export default function RecipeDetail() {
     const checkOwnership = async () => {
       try {
         const userData = await UserData.getInstance().getUser();
-        setIsOwner(userData?.id === recipe?.createdBy?.id);
+        setIsOwner(userData?._id === recipe?.createdBy?._id);
       } catch (error) {
         console.error("Error checking ownership:", error);
       }
@@ -115,6 +115,7 @@ export default function RecipeDetail() {
         api.get(`/recipes/${id}/related`),
       ]);
       setRecipe(recipeRes);
+      console.log(recipeRes);
       setComments(commentsRes);
       setRelated(relatedRes);
     } catch (e) {

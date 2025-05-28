@@ -4,8 +4,8 @@ import { keyUserData } from "../utils/storage_key";
 import { api } from "./api";
 
 export type User = {
-  id: string;
-  name: string;
+  _id: string;
+  username: string;
   email: string;
   // Add other user fields as needed
 };
@@ -98,6 +98,15 @@ export class UserData {
       return this.user;
     }
     return null;
+  }
+
+  public async getUserById(id: string): Promise<User | null> {
+    const user = await api.get(`/users`, {
+      params: {
+        id: id,
+      },
+    });
+    return user;
   }
 
   public static async init(): Promise<User | null> {

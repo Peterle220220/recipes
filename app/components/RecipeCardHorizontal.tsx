@@ -18,7 +18,7 @@ export default function RecipeCardHorizontal({ item, onPress }) {
       <View style={styles.cardContent}>
         <Text style={styles.cardTitle}>{item.title}</Text>
         <Text style={styles.cardSubtitle}>
-          By {item.createdBy?.username || "Unknown"}
+          By {item.createdBy?.username || "You"}
         </Text>
         {item.rating == 0 ? (
           <View />

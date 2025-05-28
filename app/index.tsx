@@ -13,6 +13,7 @@ export default function Index() {
         if (token) {
           await UserData.getInstance().fetchFavorite();
           await UserData.getInstance().fetchBookmarked();
+          await UserData.getInstance().fetchUser();
           router.replace("/(tabs)/home");
         } else {
           router.replace("/login" as Href);
