@@ -1,7 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import * as Notifications from "expo-notifications";
-import { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -47,36 +47,36 @@ function AccountScreen() {
   const [deletePassword, setDeletePassword] = useState("");
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [deleteError, setDeleteError] = useState("");
+  useFocusEffect(
+    React.useCallback(() => {
+      loadProfile();
+    }, [])
+  );
 
-  // Load profile
-  useEffect(() => {
-    const loadProfile = async () => {
-      setLoading(true);
-      setError("");
-      try {
-        const userData = await userService.getUserProfile();
-        setUsername(userData.username || "");
-        setEmail(userData.email || "");
-        setLocation(userData.location || "");
-        setPreferences({
-          emailNotifications: userData.preferences?.emailNotifications ?? true,
-          weeklyRecommendations:
-            userData.preferences?.weeklyRecommendations ?? true,
-          darkMode: userData.preferences?.darkMode ?? false,
-          metricUnits: userData.preferences?.metricUnits ?? true,
-          publicProfile: userData.preferences?.publicProfile ?? true,
-        });
-        const recipes = await userService.getUserRecipes();
-        setRecipeCount(recipes.length);
-      } catch (err) {
-        setError("Failed to load profile. Please try again.");
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadProfile();
-  }, []);
-
+  const loadProfile = async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const userData = await userService.getUserProfile();
+      setUsername(userData.username || "");
+      setEmail(userData.email || "");
+      setLocation(userData.location || "");
+      setPreferences({
+        emailNotifications: userData.preferences?.emailNotifications ?? true,
+        weeklyRecommendations:
+          userData.preferences?.weeklyRecommendations ?? true,
+        darkMode: userData.preferences?.darkMode ?? false,
+        metricUnits: userData.preferences?.metricUnits ?? true,
+        publicProfile: userData.preferences?.publicProfile ?? true,
+      });
+      const recipes = await userService.getUserRecipes();
+      setRecipeCount(recipes.length);
+    } catch (err) {
+      setError("Failed to load profile. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
   const handleSendNotification = async () => {
     await Notifications.scheduleNotificationAsync({
       content: {

@@ -66,6 +66,7 @@ export default function RecipesScreen() {
     React.useCallback(() => {
       fetchFavorites(true);
       fetchSaved(true);
+      fetchMyRecipes(true);
     }, [])
   );
 
