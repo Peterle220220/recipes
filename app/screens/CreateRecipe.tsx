@@ -60,8 +60,8 @@ async function uploadImage(imageFile: any) {
     });
     const data = await response.json();
     if (!response.ok) throw new Error(data.message || "Upload failed");
-    if (data.imageUrl && data.imageUrl.startsWith("/uploads/")) {
-      data.imageUrl = data.imageUrl.replace("/uploads/", "uploads\\");
+    if (data.imageUrl) {
+      data.imageUrl = data.imageUrl.replace("uploads\\", "uploads/");
     }
     console.log("Upload response:", data.imageUrl);
     return data;

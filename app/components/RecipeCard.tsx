@@ -15,10 +15,11 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
   imageSource,
   recipeName,
   recipeId,
+
   onPress,
 }) => {
-  const [isFavorite, setIsFavorite] = useState(false);
-  const [isBookmarked, setIsBookmarked] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(true);
+  const [isBookmarked, setIsBookmarked] = useState(true);
 
   useEffect(() => {
     const isFav = UserData.getFavorites()

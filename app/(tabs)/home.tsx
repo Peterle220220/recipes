@@ -16,6 +16,7 @@ import {
 } from "react-native";
 import RecipeCard from "../components/RecipeCard";
 import { api, api_base } from "../services/api";
+import { UserData } from "../services/user_data";
 
 export default function HomeScreen() {
   const navigation = useNavigation();
@@ -75,8 +76,12 @@ export default function HomeScreen() {
 
   const onRefresh = async () => {
     setRefreshing(true);
-    await fetchRecipes();
-    await fetchRecipesRecent();
+
+    await Promise.all([
+      fetchRecipes(),
+      fetchRecipesRecent(),
+      UserData.init(),
+    ]); 
     setRefreshing(false);
   };
 

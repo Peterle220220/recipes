@@ -19,7 +19,7 @@ export class UserData {
 
   private bookmarked: any[] = [];
 
-  private constructor() {}
+  private constructor() { }
 
   public static isFavorite(recipeId: string): boolean {
     return UserData.getInstance().favorite.includes(recipeId);
@@ -72,7 +72,8 @@ export class UserData {
   }
 
   public async addFavorite(recipeId: string): Promise<void> {
-    await api.post("/users/favorites", { recipeId });
+    const tet = await api.post("/users/favorites", { recipeId });
+    console.log(tet);
     this.favorite.push(recipeId);
   }
 
